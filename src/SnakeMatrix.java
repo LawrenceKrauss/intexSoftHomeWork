@@ -44,4 +44,20 @@ public class SnakeMatrix implements IntegerMatrix {
     public int[][] getMatrix(){
         return Arrays.stream(matrix).map(int[]::clone).toArray(int[][]::new);
     }
+    
+    public static class Factory extends MatrixFactory {
+        static {
+            MatrixFactory.Registry.register(new Factory());
+        }
+        
+        @Override
+        public IntegerMatrix create(int rows, int columns) {
+            return new SnakeMatrix(rows, columns);
+        }
+        
+        @Override
+        public String getTypeName() {
+            return "Змейка";
+        }
+    }
 }
