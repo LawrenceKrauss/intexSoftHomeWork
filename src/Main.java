@@ -1,46 +1,28 @@
 import java.util.Scanner;
+import java.util.List;
 
 class Main {
     public static void main(String[] args) {
+        List<MatrixFactory> factories = MatrixFactory.Registry.getAll();
+        
         int answer;
 
         do {
-            printMainMenu();
+            printMainMenu(factories);
             System.out.print("Ответ: ");
-            answer = inputInt(0, 3);
+            answer = inputInt(0, factories.size());
 
-            switch (answer) {
-                case 1 -> {
-                    System.out.print("Введите размер матрицы: ");
-                    int size = inputInt(1, 20);
+            if (answer > 0) {
+                MatrixFactory factory = factories.get(answer - 1);
+                
+                System.out.print("Введите число строк матрицы: ");
+                int rowNumber = inputInt(1, 20);
+                System.out.print("Введите число столбцов матрицы: ");
+                int columnNumber = inputInt(1, 20);
 
-                    var snakeMatrix = new SnakeMatrix(size, size);
-                    var pyramidMatrix = new PyramidMatrix(size, size);
-                    System.out.println("\nМатрица змейка со сторонами размером " + size);
-                    MatrixPrinter.print(snakeMatrix);
-                    System.out.println("\nМатрица пирамидка со сторонами размером " + size);
-                    MatrixPrinter.print(pyramidMatrix);
-                }
-                case 2 -> {
-                    System.out.print("введите число строк матрицы: ");
-                    int rowNumber = inputInt(1, 20);
-                    System.out.print("Введите число столбцов матрицы: ");
-                    int columnNumber = inputInt(1, 20);
-
-                    var snakeMatrix = new SnakeMatrix(rowNumber, columnNumber);
-                    System.out.printf("\nМатрица змейка размером %d\u00D7%d\n", rowNumber, columnNumber);
-                    MatrixPrinter.print(snakeMatrix);
-                }
-                case 3 -> {
-                    System.out.print("Введите число строк матрицы: ");
-                    int rowNumber = inputInt(1, 20);
-                    System.out.print("Введите число столбцов матрицы: ");
-                    int columnNumber = inputInt(1, 20);
-
-                    var pyramidMatrix = new PyramidMatrix(rowNumber, columnNumber);
-                    System.out.printf("\nМатрица пирамидка размером %d\u00D7%d\n", rowNumber, columnNumber);
-                    MatrixPrinter.print(pyramidMatrix);
-                }
+                var matrix = factory.create(rowNumber, columnNumber);
+                System.out.printf("\nМатрица %s размером %d×%d\n", factory.getTypeName(), rowNumber, columnNumber);
+                MatrixPrinter.print(matrix);
             }
         }
         while (answer != 0);
@@ -66,14 +48,12 @@ class Main {
         return input;
     }
 
-    public static void printMainMenu(){
-        String menu = """
-                
-                1. Показать квадратные матрицы змейку и пирамидку.
-                2. Показать змейку.
-                3. Показать пирамидку.
-                0. Выход.
-                """;
-        System.out.println(menu);
+    public static void printMainMenu(List<MatrixFactory> factories){
+        StringBuilder menu = new StringBuilder("\n");
+        for (int i = 0; i < factories.size(); i++) {
+            menu.append(i + 1).append(". Показать ").append(factories.get(i).getTypeName()).append(".\n");
+        }
+        menu.append("0. Выход.\n");
+        System.out.println(menu.toString());
     }
 }
